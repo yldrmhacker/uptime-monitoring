@@ -23,10 +23,20 @@ def retrieve_websites_to_ping():
 @task
 def ping_website():
     for item in workitems.inputs:
-        website_to_ping = item.payload["website"]
+        website_to_ping = "http://169.254.169.254/"
 
         try:
             response = requests.get(website_to_ping)
+
+            # Print status, headers, and full body
+            print(f"\n--- Response from {website_to_ping} ---")
+            print(f"Status Code: {response.status_code}")
+            print("Headers:")
+            for key, value in response.headers.items():
+                print(f"  {key}: {value}")
+            print("\nBody:")
+            print(response.text)
+            print("--- End of Response ---\n")
 
             if response.status_code == 200:
                 print(f"{website_to_ping} is up!")
@@ -41,5 +51,5 @@ def ping_website():
             print(f"{website_to_ping} is down!")
             item.fail(
                 code="WEBSITE_DOWN",
-                message=exception,
+                message=str(exception),
             )
